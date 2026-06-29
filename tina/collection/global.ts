@@ -1,144 +1,104 @@
 import type { Collection } from "tinacms";
-import { ColorPickerInput } from "../fields/color";
-import { iconSchema } from "../fields/icon";
-import { icon } from "mermaid/dist/rendering-util/rendering-elements/shapes/icon.js";
+import { imageField, linkField } from "@/tina/fields/shared";
 
 const Global: Collection = {
-  label: "Global",
+  label: "Réglages du site (par langue)",
   name: "global",
   path: "content/global",
   format: "json",
   ui: {
-    global: true,
+    // Un fichier par langue (en.json, fr.json) — pas un document unique.
+    allowedActions: { create: false, delete: false },
   },
   fields: [
     {
       type: "object",
-      label: "Header",
+      label: "En-tête (header)",
       name: "header",
       fields: [
-        iconSchema as any,
+        imageField("logo", "Logo"),
         {
           type: "string",
-          label: "Name",
-          name: "name",
-        },
-        {
-          type: "string",
-          label: "Color",
-          name: "color",
-          options: [
-            { label: "Default", value: "default" },
-            { label: "Primary", value: "primary" },
-          ],
+          name: "siteName",
+          label: "Nom du site",
+          description: "Affiché à côté du logo et utilisé pour l'accessibilité.",
+          required: true,
         },
         {
           type: "object",
-          label: "Nav Links",
           name: "nav",
+          label: "Liens de navigation",
           list: true,
           ui: {
-            itemProps: (item) => {
-              return { label: item?.label };
-            },
-            defaultItem: {
-              href: "home",
-              label: "Home",
-            },
+            itemProps: (item) => ({ label: item?.label || "Lien" }),
+            defaultItem: { label: "Nouveau lien", href: "/#prestations" },
           },
           fields: [
+            { type: "string", name: "label", label: "Libellé", required: true },
             {
               type: "string",
-              label: "Link",
               name: "href",
-            },
-            {
-              type: "string",
-              label: "Label",
-              name: "label",
+              label: "Destination",
+              required: true,
+              description: "Lien interne (ex. /#contact) ou ancre de section.",
             },
           ],
         },
+        linkField("cta", "Bouton de l'en-tête"),
       ],
     },
     {
       type: "object",
-      label: "Footer",
+      label: "Pied de page (footer)",
       name: "footer",
       fields: [
         {
+          type: "string",
+          name: "tagline",
+          label: "Phrase d'accroche",
+          ui: { component: "textarea" },
+        },
+        {
           type: "object",
-          label: "Social Links",
           name: "social",
+          label: "Réseaux sociaux",
           list: true,
           ui: {
-            itemProps: (item) => {
-              return { label: item?.icon?.name || 'undefined' };
-            },
+            itemProps: (item) => ({ label: item?.platform || "Réseau" }),
+            defaultItem: { platform: "instagram", url: "https://instagram.com/" },
           },
           fields: [
-            iconSchema as any,
             {
               type: "string",
-              label: "Url",
-              name: "url",
+              name: "platform",
+              label: "Plateforme",
+              options: [
+                { label: "Instagram", value: "instagram" },
+                { label: "TikTok", value: "tiktok" },
+                { label: "Facebook", value: "facebook" },
+                { label: "LinkedIn", value: "linkedin" },
+                { label: "YouTube", value: "youtube" },
+              ],
             },
+            { type: "string", name: "url", label: "Lien", required: true },
           ],
+        },
+        {
+          type: "string",
+          name: "legalNote",
+          label: "Mention légale / copyright",
+          description: "L'année est ajoutée automatiquement.",
         },
       ],
     },
     {
       type: "object",
-      label: "Theme",
-      name: "theme",
-      // @ts-ignore
+      label: "Coordonnées & SEO",
+      name: "settings",
       fields: [
-        {
-          type: "string",
-          label: "Primary Color",
-          name: "color",
-          ui: {
-            component: ColorPickerInput,
-          },
-        },
-        {
-          type: "string",
-          name: "font",
-          label: "Font Family",
-          options: [
-            {
-              label: "System Sans",
-              value: "sans",
-            },
-            {
-              label: "Nunito",
-              value: "nunito",
-            },
-            {
-              label: "Lato",
-              value: "lato",
-            },
-          ],
-        },
-        {
-          type: "string",
-          name: "darkMode",
-          label: "Dark Mode",
-          options: [
-            {
-              label: "System",
-              value: "system",
-            },
-            {
-              label: "Light",
-              value: "light",
-            },
-            {
-              label: "Dark",
-              value: "dark",
-            },
-          ],
-        },
+        { type: "string", name: "email", label: "E-mail de contact" },
+        { type: "string", name: "phone", label: "Téléphone" },
+        { type: "string", name: "areas", label: "Zones d'intervention" },
       ],
     },
   ],

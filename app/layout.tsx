@@ -1,32 +1,32 @@
 import React from "react";
 import { Metadata } from "next";
-import { Inter as FontSans, Lato, Nunito } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { VideoDialogProvider } from "@/components/ui/VideoDialogContext";
-import VideoDialog from "@/components/ui/VideoDialog";
+import { heading, body, accent } from "./fonts";
 
 import "@/styles.css";
 import { TailwindIndicator } from "@/components/ui/breakpoint-indicator";
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const nunito = Nunito({
-  subsets: ["latin"],
-  variable: "--font-nunito",
-});
-
-const lato = Lato({
-  subsets: ["latin"],
-  variable: "--font-lato",
-  weight: "400",
-});
-
 export const metadata: Metadata = {
-  title: "Tina",
-  description: "Tina Cloud Starter",
+  metadataBase: new URL("https://sunset-ride.com"),
+  title: {
+    default: "Sunset Ride — Location de voitures de collection · Côte d'Azur & Pays Basque",
+    template: "%s · Sunset Ride",
+  },
+  description:
+    "Location de voitures de collection sur la Côte d'Azur et au Pays Basque pour vos mariages, événements et shootings. Une flotte de légende, un accompagnement sur-mesure.",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Sunset Ride",
+    title: "Sunset Ride — Location de voitures de collection",
+    description:
+      "Voitures de collection pour mariages, événements et shootings — Côte d'Azur & Pays Basque.",
+    images: ["/uploads/hero-couple-cobra.webp"],
+  },
+  icons: {
+    icon: "/favicon-32.png",
+    apple: "/uploads/logo-sunset-ride.png",
+  },
 };
 
 export default function RootLayout({
@@ -35,12 +35,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <VideoDialogProvider>
-          {children}
-          <VideoDialog />
-        </VideoDialogProvider>
+    <html
+      lang="fr"
+      className={cn(heading.variable, body.variable, accent.variable)}
+    >
+      <body className="min-h-screen bg-background font-body antialiased">
+        {children}
         <TailwindIndicator />
       </body>
     </html>

@@ -4,11 +4,25 @@
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
 
+/* ============================================================
+   Sunset Ride — Design System « Luxe / Classique »
+   Crème + encre chaude, accent bijou « sunset » (corail→or).
+   Typo : Bodoni Moda (titres) · EB Garamond (corps) · Jost (eyebrow)
+   ============================================================ */
+
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  /* Polices exposées en variables stables (parité éditeur visuel) */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-accent: var(--font-accent);
+  --font-sans: var(--font-body);
+
+  /* Tokens sémantiques (shadcn) re-mappés sur la palette Luxe */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -27,97 +41,164 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Couleurs de marque exposées en utilitaires : bg-sunset, text-gold… */
+  --color-sunset: var(--sunset);
+  --color-sunset-deep: var(--sunset-deep);
+  --color-gold: var(--gold);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-ink: var(--ink);
 }
 
 :root {
-  --highlight-text-dark: #000000;
-  --highlight-text-light: #ffffff;
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.25rem;
+
+  /* Marque */
+  --cream: oklch(0.973 0.013 88);       /* fond ivoire chaud */
+  --sand: oklch(0.93 0.018 84);         /* sable, surfaces secondaires */
+  --ink: oklch(0.245 0.012 60);         /* encre chaude (quasi-noir) */
+  --sunset: oklch(0.64 0.165 38);       /* corail-terracotta (accent bijou) */
+  --sunset-deep: oklch(0.55 0.16 34);   /* corail profond (hover) */
+  --gold: oklch(0.74 0.095 80);         /* or discret */
+
+  /* Sémantique */
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: oklch(0.99 0.006 88);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.99 0.006 88);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--cream);
+  --secondary: var(--sand);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.94 0.012 84);
+  --muted-foreground: oklch(0.5 0.018 58);
+  --accent: var(--sand);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.89 0.016 82);
+  --input: oklch(0.89 0.016 82);
+  --ring: var(--sunset);
+
+  --highlight-text-dark: #211c18;
+  --highlight-text-light: #faf6ef;
 }
 
+/* Section sombre optionnelle (variant « encre ») — pas de mode sombre global */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--ink);
+  --foreground: var(--cream);
+  --card: oklch(0.3 0.012 58);
+  --card-foreground: var(--cream);
+  --popover: oklch(0.3 0.012 58);
+  --popover-foreground: var(--cream);
+  --primary: var(--cream);
+  --primary-foreground: var(--ink);
+  --secondary: oklch(0.33 0.012 58);
+  --secondary-foreground: var(--cream);
+  --muted: oklch(0.33 0.012 58);
+  --muted-foreground: oklch(0.75 0.012 70);
+  --accent: oklch(0.36 0.03 50);
+  --accent-foreground: var(--cream);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: var(--sunset);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body), Georgia, "Times New Roman", serif;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    line-height: 1.06;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--sunset) 28%, transparent);
+    color: var(--ink);
+  }
+  /* Focus visible accessible (WCAG AA) */
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--sunset);
+    outline-offset: 3px;
+  }
+  /* Respect des préférences de mouvement réduit */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Eyebrow : Jost, capitales espacées, accent sunset */
+  .eyebrow {
+    font-family: var(--font-accent), system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--sunset-deep);
+  }
+  .font-heading { font-family: var(--font-heading), Georgia, serif; }
+  .font-body    { font-family: var(--font-body), Georgia, serif; }
+  .font-accent  { font-family: var(--font-accent), system-ui, sans-serif; }
+
+  /* Filet hairline sous les titres de section */
+  .hairline {
+    height: 1px;
+    background: linear-gradient(to right,
+      color-mix(in oklab, var(--sunset) 60%, transparent), transparent);
+  }
+  /* Dégradé sunset de marque (logo) — usages parcimonieux */
+  .text-gradient-sunset {
+    background: linear-gradient(100deg, var(--gold), var(--sunset) 55%, var(--sunset-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* ---- Apparition au scroll (élégante, lente) ---------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    filter: blur(2px);
+    transition:
+      opacity 1.05s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 1.05s cubic-bezier(0.22, 0.61, 0.36, 1),
+      filter 1.05s ease;
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+/* Repli sans JavaScript : tout reste visible */
+@media (scripting: none) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }

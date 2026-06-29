@@ -1,112 +1,179 @@
-# Tina Starter 🦙
+# Sunset Ride — Site web (Next.js 15 + TinaCMS)
 
-![tina-nextjs-starter-demo](https://user-images.githubusercontent.com/103008/130587027-995ccc45-a852-4f90-b658-13e8e0517339.gif)
+Refonte du site de **Sunset Ride**, location de voitures de collection sur la
+Côte d'Azur et au Pays Basque (mariages, événements, shootings, rallyes).
 
-This Next.js starter is powered by [TinaCMS](https://app.tina.io) for you and your team to visually live edit the structured content of your website. ✨
+- **Stack :** Next.js 15 (App Router) · React 18 · TypeScript · Tailwind v4 · TinaCMS.
+- **Direction artistique :** « Luxe / Classique » — Bodoni Moda (titres),
+  EB Garamond (corps), Jost (eyebrow/nav), palette crème + encre + accent
+  « sunset » (corail/or), grille éditoriale, photos plein cadre.
+- **CMS :** TinaCMS, dépôt unique Git-backed. Le contenu vit dans `content/`
+  (Markdown/JSON), les images dans `public/uploads`. Édition visuelle sur `/admin`.
 
-The content is managed through Markdown and JSON files stored in your GitHub repository, and queried through Tina GraphQL API.
+---
 
-### Features
-
-- [Tina Headless CMS](https://app.tina.io) for authentication, content modeling, visual editing and team management.
-- [Vercel](https://vercel.com) deployment to visually edit your site from the `/admin` route.
-- Local development workflow from the filesystem with a local GraqhQL server.
-
-## Requirements
-
-- Git, [Node.js Active LTS](https://nodejs.org/en/about/releases/), pnpm installed for local development.
-- A [TinaCMS](https://app.tina.io) account for live editing.
-
-## Local Development
-
-Install the project's dependencies:
-
-> [!NOTE]  
-> [Do you know the best package manager for Node.js?](https://www.ssw.com.au/rules/best-package-manager-for-node/) Using the right package manager can greatly enhance your development workflow. We recommend using pnpm for its speed and efficient handling of dependencies. Learn more about why pnpm might be the best choice for your projects by checking out this rule from SSW.
-
-
-```
-pnpm install
-```
-
-Run the project locally:
-
-```
-pnpm dev
-```
-
-### Local URLs
-
-- http://localhost:3000 : browse the website
-- http://localhost:3000/admin : connect to Tina Cloud and go in edit mode
-- http://localhost:3000/exit-admin : log out of Tina Cloud
-- http://localhost:4001/altair/ : GraphQL playground to test queries and browse the API documentation
-
-## Deployment
-
-### GitHub Pages
-
-This starter can be deployed to GitHub Pages. A GitHub Actions workflow is included that handles the build and deployment process. 
-
-To deploy to GitHub Pages:
-
-1. In your repository settings, ensure GitHub Pages is enabled and set to deploy from the `gh-pages` branch
-2. Push changes to your main branch - the workflow will automatically build and deploy the site
-
-> [!NOTE]
-> When deploying to GitHub Pages, you'll need to update your secrets in Settings | Secrets and variables | Actions to include:
-> - `NEXT_PUBLIC_TINA_CLIENT_ID`
-> - `TINA_TOKEN`
->
-> You get these from your TinaCloud project - [read the docs](https://tina.io/docs/tina-cloud/deployment-options/github-pages)
-
-> [!IMPORTANT]
-> GitHub Pages does not support server side code, so this will run as a static site. If you don't want to deploy to GitHub pages, just delete `.github/workflows/build-and-deploy.yml`
-
-### Building the Starter Locally (Using the hosted content API)
-
-Replace the `.env.example`, with `.env`
-
-```
-NEXT_PUBLIC_TINA_CLIENT_ID=<get this from the project you create at app.tina.io>
-TINA_TOKEN=<get this from the project you create at app.tina.io>
-NEXT_PUBLIC_TINA_BRANCH=<Specify the branch with Tina configured>
-```
-
-Build the project:
+## Démarrage rapide (local)
 
 ```bash
-pnpm build
+cp .env.example .env          # (laisser vide pour le mode local hors-ligne)
+npm install
+npm run dev                   # → http://localhost:3000  +  /admin
 ```
 
-## Getting Help
+`npm run dev` lance le serveur GraphQL local de Tina **et** Next.js. Ouvrez
+`http://localhost:3000/admin` pour l'édition visuelle (click-to-edit + aperçu
+temps réel).
 
-To get help with any TinaCMS challenges you may have:
+> En mode local, aucune connexion à TinaCloud n'est requise : le contenu est lu
+> directement depuis `content/`.
 
-- Visit the [documentation](https://tina.io/docs/) to learn about Tina.
-- [Join our Discord](https://discord.gg/zumN63Ybpf) to share feedback.
-- Visit the [community forum](https://community.tinacms.org/) to ask questions.
-- Get support through the chat widget on the TinaCMS Dashboard
-- [Email us](mailto:support@tina.io) to schedule a call with our team and share more about your context and what you're trying to achieve.
-- [Search or open an issue](https://github.com/tinacms/tinacms/issues) if something is not working.
-- Reach out on Twitter at [@tina_cms](https://twitter.com/tina_cms).
+---
 
-## Development tips
+## Scripts
 
-### Visual Studio Code GraphQL extension
+| Script                | Rôle                                                            |
+|-----------------------|-----------------------------------------------------------------|
+| `npm run dev`         | Dev Tina + Next (édition `/admin`, aperçu temps réel).          |
+| `npm run build`       | **Build de production** : `tinacms build && next build`.        |
+| `npm run start`       | Build puis démarre le serveur de production.                    |
+| `npm run build-local` | Build de prod hors-ligne (serveur Tina local, sans TinaCloud).  |
+| `npm run start-local` | `next start` seul (sert un build déjà généré).                  |
+| `npm run lint`        | Lint Biome.                                                     |
 
-[Install the GraphQL extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) to benefit from type auto-completion.
+---
 
-### Typescript
+## Modèle de contenu
 
-A good way to ensure your components match the shape of your data is to leverage the auto-generated TypeScript types.
-These are rebuilt when your `tina` config changes.
+**Collection `page`** (`content/pages/*.mdx`) — chaque page est composée en
+empilant des **sections** (blocs) :
 
-## LICENSE
+| Bloc          | `_template`     | Usage                                            |
+|---------------|-----------------|--------------------------------------------------|
+| Hero          | `hero`          | Bannière plein écran (image **ou vidéo** + titre + 2 boutons) |
+| Prestations   | `services`      | Liste éditoriale alternée (image + texte)        |
+| Collection    | `collection`    | Grille de voitures (photo + année + nom + texte) |
+| Histoire      | `story`         | À propos : texte + portrait + 3 points numérotés |
+| Galerie       | `gallery`       | Mosaïque photos                                  |
+| Témoignages   | `testimonials`  | Citations clients                                |
+| FAQ           | `faq`           | Accordéon questions / réponses (accessible)      |
+| Instagram     | `instagram`     | Galerie sociale + lien profil                    |
+| CTA           | `cta`           | Appel à l'action (fond image ou encre)           |
+| Contact       | `contact`       | Coordonnées + formulaire (mailto)                |
 
-Licensed under the [Apache 2.0 license](./LICENSE).
+### Pages
 
+- **Accueil** : `content/pages/home.mdx` → `/`
+- **Prestations dédiées** : `content/pages/prestations/*.mdx` →
+  `/prestations/mariages`, `/prestations/conduite-libre`,
+  `/prestations/rallyes`, `/prestations/photo-video`.
+  (La route catch-all `app/[...urlSegments]` mappe automatiquement tout
+  fichier `content/pages/**.mdx` sur son URL.)
 
-# Repository cleaned of LFS content
-# Repository cleaned of LFS content - Wed Sep 17 15:00:42 AEST 2025
+### Vidéo de fond du Hero
 
+Le bloc Hero accepte un champ **« Vidéo de fond »** : le chemin d'un `.mp4`
+dans `public/uploads` (ex. `/uploads/hero-speed-cote-dazur.mp4`). La vidéo est
+muette, en boucle, et l'image reste l'aperçu (poster) + repli pour le LCP.
+
+### Bilingue (EN / FR)
+
+Le site est **bilingue**, **anglais par défaut**. `/` redirige vers `/en`.
+
+- **Routes** : `app/[lang]/…` (`lang` = `en` | `fr`).
+- **Contenu par langue** : `content/pages/en/…` et `content/pages/fr/…` ;
+  réglages globaux `content/global/en.json` et `content/global/fr.json`.
+- **Sélecteur de langue** dans l'en-tête (bascule EN/FR en gardant la page
+  courante).
+- **Liens & libellés** : les liens internes sont préfixés par la langue
+  automatiquement (`lib/i18n.ts` → `localizeHref`) ; les libellés d'interface
+  (formulaire, pied de page…) viennent du dictionnaire `tr()` dans `lib/i18n.ts`.
+- **Ajouter une langue** : ajouter le code dans `LOCALES` (`lib/i18n.ts`) et
+  `LANGS` (`app/[lang]/page.tsx`), créer `content/pages/<lang>/…` +
+  `content/global/<lang>.json`, et une entrée dans le dictionnaire `tr()`.
+- Les slugs de pages sont communs aux deux langues (`prestations/…`).
+
+**Globaux** (`content/global/index.json`, doc unique) : `header` (logo, nom,
+navigation, bouton), `footer` (accroche, réseaux sociaux, mention légale),
+`settings` (e-mail, téléphone, zones).
+
+Chaque bloc a (a) un **template Tina typé** (`tina/collection/page.ts`) et
+(b) son **composant React** dans `components/blocks/`.
+`components/blocks/index.tsx` (`RenderBlocks`) aiguille sur `block.__typename`.
+
+### Règles d'édition (garde-fous client)
+
+- Libellés et aides **en français** sur chaque champ.
+- Champs **requis**, **valeurs par défaut** et **validation** : impossible de
+  casser la mise en page.
+- **`alt` obligatoire** sur chaque image (accessibilité + SEO).
+- Variantes uniquement via des listes d'options (fond de section, style de
+  bouton) — **pas de HTML/CSS libre**.
+- `data-tina-field` sur chaque élément éditable → **click-to-edit**.
+
+### Images / médias
+
+Médias **dans le dépôt** (`media.tina` → `public/uploads`), versionnés avec le
+contenu. Pas de service externe. Limites Tina : pas de renommage via le Media
+Manager, 100 Mio/fichier.
+
+---
+
+## Données (App Router)
+
+Le pattern suivi partout :
+
+1. **Server Component** (`app/page.tsx`, `app/[...urlSegments]/page.tsx`) :
+   `client.queries.page(...)` + `generateStaticParams`.
+2. Passe `{ query, variables, data }` au **Client Component**
+   (`client-page.tsx`) qui appelle **`useTina`** et rend `data` (pas `props`)
+   → aperçu temps réel dans `/admin`.
+3. `export const revalidate = 300` (ISR) sur les routes.
+
+Types et client GraphQL : **générés** dans `tina/__generated__/` (ne pas
+éditer à la main).
+
+---
+
+## Design system
+
+Tokens dans `styles.css` (variables CSS `--cream`, `--ink`, `--sunset`,
+`--gold`, et polices `--font-heading/body/accent`). Les blocs lisent ces
+variables — **aucune couleur n'est codée en dur** dans un bloc, ce qui permet
+de faire évoluer la charte au même endroit. Polices auto-hébergées via
+`next/font/google` (RGPD-clean, `app/fonts.ts`).
+
+---
+
+## Déploiement (Vercel)
+
+1. Créer un projet **TinaCloud** isolé pour ce client → `app.tina.io`.
+2. Définir les variables d'environnement **dans Vercel** (avant le build) :
+   - `NEXT_PUBLIC_TINA_CLIENT_ID`
+   - `TINA_TOKEN`
+   - `NEXT_PUBLIC_TINA_BRANCH` (ex. `main`)
+3. Build command : `npm run build` (= `tinacms build && next build`).
+4. `/admin` sert l'éditeur visuel.
+5. La **protection par mot de passe Vercel** (preview avant signature) reste au
+   niveau Vercel, indépendante du CMS.
+
+---
+
+## Handoff client (après signature)
+
+1. Inviter le client comme utilisateur sur le **projet TinaCloud**.
+2. Lui donner l'accès à **`/admin`** sur son site.
+3. Lui transmettre le mini-guide d'édition (sections, images, alt obligatoire).
+
+---
+
+## ⚠️ À personnaliser avant la mise en production
+
+- **Téléphone** : `+33 6 12 34 56 78` est un **placeholder** — remplacer par le
+  vrai numéro (`content/global/index.json` → `settings.phone`, le bloc Contact
+  et le CTA `tel:`).
+- **E-mail** : vérifier `contact@sunset-ride.com`.
+- **Formulaire de contact** : il ouvre le client mail (mailto). Pour des envois
+  sans messagerie, brancher un service (Formspree, Resend…) dans
+  `components/util/contact-form.tsx`.
+- **Favicon / logo HD** : le logo fourni est la version 192px ; remplacer par
+  une version haute résolution si disponible.

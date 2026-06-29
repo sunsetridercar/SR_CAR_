@@ -1,0 +1,35 @@
+{
+  "header": {
+    "logo": {
+      "src": "/uploads/logo-sunset-ride.png",
+      "alt": "Logo Sunset Ride — soleil couchant et palmiers"
+    },
+    "siteName": "Sunset Ride",
+    "nav": [
+      { "label": "Prestations", "href": "/#prestations" },
+      { "label": "Collection", "href": "/#collection" },
+      { "label": "Histoire", "href": "/#histoire" },
+      { "label": "Galerie", "href": "/#galerie" },
+      { "label": "Contact", "href": "/#contact" }
+    ],
+    "cta": {
+      "label": "Demander un devis",
+      "href": "/#contact",
+      "variant": "primary"
+    }
+  },
+  "footer": {
+    "tagline": "Location de voitures de collection sur la Côte d'Azur et au Pays Basque — pour des mariages, événements et shootings inoubliables.",
+    "social": [
+      { "platform": "instagram", "url": "https://www.instagram.com/_sunsetride/" },
+      { "platform": "tiktok", "url": "https://www.tiktok.com/@_sunsetride" },
+      { "platform": "facebook", "url": "https://www.facebook.com/share/pMbTU3b5BHY8f8kE/?mibextid=LQQJ4d" }
+    ],
+    "legalNote": "Sunset Ride — Tous droits réservés"
+  },
+  "settings": {
+    "email": "contact@sunset-ride.com",
+    "phone": "+33 6 12 34 56 78",
+    "areas": "Côte d'Azur & Pays Basque"
+  }
+}

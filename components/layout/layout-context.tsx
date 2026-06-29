@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useContext } from "react";
-import { GlobalQuery } from "../../tina/__generated__/types";
+import React, { useState, useContext, useEffect } from "react";
+import { GlobalQuery } from "@/tina/__generated__/types";
 
 interface LayoutState {
   globalSettings: GlobalQuery["global"];
@@ -9,7 +9,7 @@ interface LayoutState {
   >;
   pageData: {};
   setPageData: React.Dispatch<React.SetStateAction<{}>>;
-  theme: GlobalQuery["global"]["theme"];
+  lang: string;
 }
 
 const LayoutContext = React.createContext<LayoutState | undefined>(undefined);
@@ -18,12 +18,9 @@ export const useLayout = () => {
   const context = useContext(LayoutContext);
   return (
     context || {
-      theme: {
-        color: "blue",
-        darkMode: "default",
-      },
       globalSettings: undefined,
       pageData: undefined,
+      lang: "en",
     }
   );
 };
@@ -32,19 +29,25 @@ interface LayoutProviderProps {
   children: React.ReactNode;
   globalSettings: GlobalQuery["global"];
   pageData: {};
+  lang: string;
 }
 
 export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   children,
   globalSettings: initialGlobalSettings,
   pageData: initialPageData,
+  lang,
 }) => {
-  const [globalSettings, setGlobalSettings] = useState<GlobalQuery["global"]>(
-    initialGlobalSettings
-  );
+  const [globalSettings, setGlobalSettings] =
+    useState<GlobalQuery["global"]>(initialGlobalSettings);
   const [pageData, setPageData] = useState<{}>(initialPageData);
 
-  const theme = globalSettings.theme;
+  // Met à jour l'attribut lang du document pour les lecteurs d'écran.
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+    }
+  }, [lang]);
 
   return (
     <LayoutContext.Provider
@@ -53,7 +56,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         setGlobalSettings,
         pageData,
         setPageData,
-        theme,
+        lang,
       }}
     >
       {children}

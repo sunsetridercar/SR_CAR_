@@ -1,120 +1,85 @@
-import Link from 'next/link'
-import type { Template } from 'tinacms';
-import { tinaField } from 'tinacms/dist/react';
-import { iconSchema } from '@/tina/fields/icon';
-import { Button } from '@/components/ui/button'
-import { PageBlocksCta } from '@/tina/__generated__/types';
-import { Icon } from '../icon';
-import { Section } from '../layout/section';
+import * as React from "react";
+import type { Template } from "tinacms";
+import { tinaField } from "tinacms/dist/react";
+import type { PageBlocksCta } from "@/tina/__generated__/types";
+import { Media } from "@/components/util/media";
+import { CtaLink } from "@/components/util/cta-link";
+import { Reveal } from "@/components/util/reveal";
+import { imageField, linkField } from "@/tina/fields/shared";
 
-export const CallToAction = ({ data }: { data: PageBlocksCta }) => {
-    return (
-        <Section>
-            <div className="text-center">
-                <h2 className="text-balance text-4xl font-semibold lg:text-5xl" data-tina-field={tinaField(data, 'title')}>{data.title}</h2>
-                <p className="mt-4" data-tina-field={tinaField(data, 'description')}>{data.description}</p>
-
-                <div className="mt-12 flex flex-wrap justify-center gap-4">
-                    {data.actions && data.actions.map(action => (
-                        <div
-                            key={action!.label}
-                            data-tina-field={tinaField(action)}
-                            className="bg-foreground/10 rounded-[calc(var(--radius-xl)+0.125rem)] border p-0.5">
-                            <Button
-                                asChild
-                                size="lg"
-                                variant={action!.type === 'link' ? 'ghost' : 'default'}
-                                className="rounded-xl px-5 text-base">
-                                <Link href={action!.link!}>
-                                    {action?.icon && (<Icon data={action?.icon} />)}
-                                    <span className="text-nowrap">{action!.label}</span>
-                                </Link>
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </Section>
-    )
-}
-
+export const CallToAction = ({ data, lang }: { data: PageBlocksCta; lang: string }) => {
+  const hasImage = !!data.backgroundImage?.src;
+  return (
+    <section className="dark relative isolate overflow-hidden bg-ink text-cream">
+      {hasImage && (
+        <>
+          <Media
+            src={data.backgroundImage?.src}
+            alt={data.backgroundImage?.alt}
+            sizes="100vw"
+            className="absolute inset-0 -z-10 h-full w-full"
+          />
+          <div aria-hidden className="absolute inset-0 -z-10 bg-ink/70" />
+        </>
+      )}
+      <Reveal className="mx-auto max-w-3xl px-5 py-24 text-center sm:px-6 md:py-32">
+        {data.eyebrow && (
+          <p className="eyebrow text-gold" data-tina-field={tinaField(data, "eyebrow")}>
+            {data.eyebrow}
+          </p>
+        )}
+        {data.title && (
+          <h2
+            className="mt-5 text-4xl md:text-6xl"
+            data-tina-field={tinaField(data, "title")}
+          >
+            {data.title}
+          </h2>
+        )}
+        {data.text && (
+          <p
+            className="mx-auto mt-6 max-w-xl text-lg text-cream/80"
+            data-tina-field={tinaField(data, "text")}
+          >
+            {data.text}
+          </p>
+        )}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          {data.primaryCta?.label && (
+            <span data-tina-field={tinaField(data.primaryCta)}>
+              <CtaLink href={data.primaryCta.href} label={data.primaryCta.label} variant={data.primaryCta.variant || "primary"} lang={lang} />
+            </span>
+          )}
+          {data.secondaryCta?.label && (
+            <span data-tina-field={tinaField(data.secondaryCta)}>
+              <CtaLink href={data.secondaryCta.href} label={data.secondaryCta.label} variant={data.secondaryCta.variant || "outline"} lang={lang} />
+            </span>
+          )}
+        </div>
+      </Reveal>
+    </section>
+  );
+};
 
 export const ctaBlockSchema: Template = {
-    name: "cta",
-    label: "CTA",
-    ui: {
-        previewSrc: "/blocks/cta.png",
-        defaultItem: {
-            title: "Start Building",
-            description: "Get started with TinaCMS today and take your content management to the next level.",
-            actions: [
-                {
-                    label: 'Get Started',
-                    type: 'button',
-                    link: '/',
-                },
-                {
-                    label: 'Book Demo',
-                    type: 'link',
-                    link: '/',
-                },
-            ],
-        },
+  name: "cta",
+  label: "Appel à l'action (CTA)",
+  ui: {
+    previewSrc: "/blocks/cta.png",
+    defaultItem: {
+      eyebrow: "Parlons de votre projet",
+      title: "Réservez votre voiture de collection",
+      text: "Disponibilité, devis et conseils : notre équipe vous répond sous 24h.",
+      primaryCta: { label: "Demander un devis", href: "/#contact", variant: "primary" },
+      secondaryCta: { label: "+33 6 00 00 00 00", href: "tel:+33600000000", variant: "outline" },
     },
-    fields: [
-        {
-            type: "string",
-            label: "Title",
-            name: "title",
-        },
-        {
-            type: "string",
-            label: "Description",
-            name: "description",
-            ui: {
-                component: "textarea",
-            },
-        },
-        {
-            label: 'Actions',
-            name: 'actions',
-            type: 'object',
-            list: true,
-            ui: {
-                defaultItem: {
-                    label: 'Action Label',
-                    type: 'button',
-                    icon: {
-                        name: "Tina",
-                        color: "white",
-                        style: "float",
-                    },
-                    link: '/',
-                },
-                itemProps: (item) => ({ label: item.label }),
-            },
-            fields: [
-                {
-                    label: 'Label',
-                    name: 'label',
-                    type: 'string',
-                },
-                {
-                    label: 'Type',
-                    name: 'type',
-                    type: 'string',
-                    options: [
-                        { label: 'Button', value: 'button' },
-                        { label: 'Link', value: 'link' },
-                    ],
-                },
-                iconSchema as any,
-                {
-                    label: 'Link',
-                    name: 'link',
-                    type: 'string',
-                },
-            ],
-        },
-    ],
+  },
+  fields: [
+    { type: "string", name: "eyebrow", label: "Sur-titre" },
+    { type: "string", name: "title", label: "Titre", required: true },
+    { type: "string", name: "text", label: "Texte", ui: { component: "textarea" } },
+    imageField("backgroundImage", "Image de fond (optionnelle)", { required: false }),
+    linkField("primaryCta", "Bouton principal"),
+    linkField("secondaryCta", "Bouton secondaire"),
+  ],
 };

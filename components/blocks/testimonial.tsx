@@ -1,123 +1,120 @@
-import React from "react";
+import * as React from "react";
 import type { Template } from "tinacms";
-import { PageBlocksTestimonial, PageBlocksTestimonialTestimonials } from "../../tina/__generated__/types";
-import { Section } from "../layout/section";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Card, CardContent } from "../ui/card";
 import { tinaField } from "tinacms/dist/react";
-import { sectionBlockSchemaField } from '../layout/section';
+import type { PageBlocksTestimonials } from "@/tina/__generated__/types";
+import { SectionShell, toneField } from "@/components/util/section-shell";
+import { Reveal } from "@/components/util/reveal";
+import { imageField } from "@/tina/fields/shared";
 
-export const Testimonial = ({ data }: { data: PageBlocksTestimonial }) => {
+export const Testimonials = ({ data }: { data: PageBlocksTestimonials }) => {
+  const items = data.items || [];
   return (
-    <Section background={data.background!}>
-      <div className="text-center">
-        <h2 className="text-title text-3xl font-semibold" data-tina-field={tinaField(data, 'title')}>{data.title}</h2>
-        <p className="text-body mt-6" data-tina-field={tinaField(data, 'description')}>{data.description}</p>
+    <SectionShell
+      tone={data.tone ?? "ink"}
+      id="temoignages"
+      className="scroll-mt-20"
+      bgImage={data.backgroundImage}
+      overlayClassName="bg-gradient-to-b from-ink/90 via-ink/80 to-ink/90"
+      {...(data.backgroundImage?.src
+        ? { "data-tina-field": tinaField(data, "backgroundImage") }
+        : {})}
+    >
+      <Reveal as="header" className="mx-auto max-w-2xl text-center">
+        {data.eyebrow && (
+          <p className="eyebrow" data-tina-field={tinaField(data, "eyebrow")}>
+            {data.eyebrow}
+          </p>
+        )}
+        {data.title && (
+          <h2 className="mt-4 text-4xl md:text-5xl" data-tina-field={tinaField(data, "title")}>
+            {data.title}
+          </h2>
+        )}
+      </Reveal>
+
+      <div className="mt-16 grid gap-12 md:grid-cols-2 md:gap-x-16 md:gap-y-14">
+        {items.map((item, i) => {
+          if (!item) return null;
+          return (
+            <Reveal as="figure" key={i} delay={(i % 2) * 120} data-tina-field={tinaField(item)} className="flex flex-col">
+              <span aria-hidden className="font-heading text-6xl leading-none text-sunset">
+                &ldquo;
+              </span>
+              {item.quote && (
+                <blockquote
+                  className="-mt-4 font-heading text-xl italic leading-relaxed md:text-2xl"
+                  data-tina-field={tinaField(item, "quote")}
+                >
+                  {item.quote}
+                </blockquote>
+              )}
+              <figcaption className="mt-6">
+                {item.author && (
+                  <span
+                    className="eyebrow !text-current"
+                    data-tina-field={tinaField(item, "author")}
+                  >
+                    {item.author}
+                  </span>
+                )}
+                {item.role && (
+                  <span
+                    className="mt-1 block text-sm opacity-70"
+                    data-tina-field={tinaField(item, "role")}
+                  >
+                    {item.role}
+                  </span>
+                )}
+              </figcaption>
+            </Reveal>
+          );
+        })}
       </div>
-      <div className="mt-8 [column-width:300px] [column-gap:1.5rem] md:mt-12">
-        {data.testimonials?.map((testimonial, index) => (
-          <TestimonialCard key={index} testimonial={testimonial!} />
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-const TestimonialCard = ({ testimonial }: { testimonial: PageBlocksTestimonialTestimonials }) => {
-  return (
-    <Card className="mb-6 break-inside-avoid">
-      <CardContent className="grid grid-cols-[auto_1fr] gap-3 pt-6">
-        <Avatar className="size-9" data-tina-field={tinaField(testimonial, 'avatar')}>
-          {testimonial.avatar && (
-            <AvatarImage alt={testimonial.author!} src={testimonial.avatar} loading="lazy" width="120" height="120" />
-          )}
-          <AvatarFallback>{testimonial.author!.split(" ").map((word) => word[0]).join("")}</AvatarFallback>
-        </Avatar>
-
-        <div>
-          <h3 className="font-medium" data-tina-field={tinaField(testimonial, 'author')}>{testimonial.author}</h3>
-
-          <span className="text-muted-foreground block text-sm tracking-wide" data-tina-field={tinaField(testimonial, 'role')}>{testimonial.role}</span>
-
-          <blockquote className="mt-3" data-tina-field={tinaField(testimonial, 'quote')}>
-            <p className="text-gray-700 dark:text-gray-300">{testimonial.quote}</p>
-          </blockquote>
-        </div>
-      </CardContent>
-    </Card>
+    </SectionShell>
   );
 };
 
 export const testimonialBlockSchema: Template = {
-  name: "testimonial",
-  label: "Testimonial",
+  name: "testimonials",
+  label: "Témoignages",
   ui: {
     previewSrc: "/blocks/testimonial.png",
     defaultItem: {
-      testimonials: [
+      eyebrow: "Ils nous ont fait confiance",
+      title: "Des souvenirs qui durent",
+      tone: "ink",
+      items: [
         {
           quote:
-            "There are only two hard things in Computer Science: cache invalidation and naming things.",
-          author: "Phil Karlton",
+            "Une expérience inoubliable pour notre mariage. La voiture était sublime et le service impeccable.",
+          author: "Camille & Antoine",
+          role: "Mariage à Saint-Jean-de-Luz",
         },
       ],
     },
   },
   fields: [
-    sectionBlockSchemaField as any,
-    {
-      type: "string",
-      label: "Title",
-      name: "title",
-    },
-    {
-      type: "string",
-      label: "Description",
-      name: "description",
-      ui: {
-        component: "textarea",
-      },
-    },
+    toneField,
+    imageField("backgroundImage", "Image de fond (optionnelle)", { required: false }),
+    { type: "string", name: "eyebrow", label: "Sur-titre" },
+    { type: "string", name: "title", label: "Titre de section", required: true },
     {
       type: "object",
+      name: "items",
+      label: "Témoignages",
       list: true,
-      label: "Testimonials",
-      name: "testimonials",
       ui: {
+        itemProps: (item) => ({ label: item?.author || "Témoignage" }),
         defaultItem: {
-          quote: "There are only two hard things in Computer Science: cache invalidation and naming things.",
-          author: "Phil Karlton",
-        },
-        itemProps: (item) => {
-          return {
-            label: `${item.quote} - ${item.author}`,
-          };
+          quote: "Partagez ici un avis client.",
+          author: "Prénom Nom",
+          role: "Occasion / lieu",
         },
       },
       fields: [
-        {
-          type: "string",
-          ui: {
-            component: "textarea",
-          },
-          label: "Quote",
-          name: "quote",
-        },
-        {
-          type: "string",
-          label: "Author",
-          name: "author",
-        },
-        {
-          type: "string",
-          label: "Role",
-          name: "role",
-        },
-        {
-          type: "image",
-          label: "Avatar",
-          name: "avatar",
-        }
+        { type: "string", name: "quote", label: "Citation", required: true, ui: { component: "textarea" } },
+        { type: "string", name: "author", label: "Auteur", required: true },
+        { type: "string", name: "role", label: "Contexte (lieu, occasion)" },
       ],
     },
   ],

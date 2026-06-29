@@ -1,223 +1,134 @@
-'use client';
-import { iconSchema } from '@/tina/fields/icon';
-import Image from 'next/image';
-import Link from 'next/link';
-import * as React from 'react';
-import type { Template } from 'tinacms';
-import { tinaField } from 'tinacms/dist/react';
-import { PageBlocksHero, PageBlocksHeroImage } from '../../tina/__generated__/types';
-import { Icon } from '../icon';
-import { Section, sectionBlockSchemaField } from '../layout/section';
-import { AnimatedGroup } from '../motion-primitives/animated-group';
-import { TextEffect } from '../motion-primitives/text-effect';
-import { Button } from '../ui/button';
-import HeroVideoDialog from '../ui/hero-video-dialog';
-import { Transition } from 'motion/react';
-const transitionVariants = {
-  container: {
-    visible: {
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.75,
-      },
-    },
-  },
-  item: {
-    hidden: {
-      opacity: 0,
-      filter: 'blur(12px)',
-      y: 12,
-    },
-    visible: {
-      opacity: 1,
-      filter: 'blur(0px)',
-      y: 0,
-      transition: {
-        type: 'spring',
-        bounce: 0.3,
-        duration: 1.5,
-      } as Transition,
-    },
-  },
-};
+import * as React from "react";
+import type { Template } from "tinacms";
+import { tinaField } from "tinacms/dist/react";
+import type { PageBlocksHero } from "@/tina/__generated__/types";
+import { Media } from "@/components/util/media";
+import { CtaLink } from "@/components/util/cta-link";
+import { HeroVideo } from "@/components/util/hero-video";
+import { imageField, linkField } from "@/tina/fields/shared";
 
-export const Hero = ({ data }: { data: PageBlocksHero }) => {
-  // Extract the background style logic into a more readable format
-  let gradientStyle: React.CSSProperties | undefined = undefined;
-  if (data.background) {
-    const colorName = data.background
-      .replace(/\/\d{1,2}$/, '')
-      .split('-')
-      .slice(1)
-      .join('-');
-    const opacity = data.background.match(/\/(\d{1,3})$/)?.[1] || '100';
-
-    gradientStyle = {
-      '--tw-gradient-to': `color-mix(in oklab, var(--color-${colorName}) ${opacity}%, transparent)`,
-    } as React.CSSProperties;
-  }
-
+export const Hero = ({ data, lang }: { data: PageBlocksHero; lang: string }) => {
   return (
-    <Section background={data.background!}>
-      <div className='text-center sm:mx-auto lg:mr-auto lg:mt-0'>
-        {data.headline && (
-          <div data-tina-field={tinaField(data, 'headline')}>
-            <TextEffect preset='fade-in-blur' speedSegment={0.3} as='h1' className='mt-8 text-balance text-6xl md:text-7xl xl:text-[5.25rem]'>
-              {data.headline!}
-            </TextEffect>
-          </div>
-        )}
-        {data.tagline && (
-          <div data-tina-field={tinaField(data, 'tagline')}>
-            <TextEffect per='line' preset='fade-in-blur' speedSegment={0.3} delay={0.5} as='p' className='mx-auto mt-8 max-w-2xl text-balance text-lg'>
-              {data.tagline!}
-            </TextEffect>
-          </div>
-        )}
+    <section className="dark relative isolate flex min-h-dvh items-end overflow-hidden bg-ink text-cream">
+      {/* Image plein cadre (poster + repli, sert au LCP) */}
+      <Media
+        src={data.image?.src}
+        alt={data.image?.alt}
+        priority
+        sizes="100vw"
+        className="absolute inset-0 -z-10 h-full w-full"
+        imgClassName="object-cover"
+      />
+      {/* Vidéo(s) de fond optionnelle(s) : séquence + fondu enchaîné si deux vidéos */}
+      <HeroVideo src1={data.videoSrc} src2={data.videoSrc2} poster={data.image?.src} />
+      {/* Dégradé pour la lisibilité du texte */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/10"
+      />
 
-        <AnimatedGroup variants={transitionVariants} className='mt-12 flex flex-col items-center justify-center gap-2 md:flex-row'>
-          {data.actions &&
-            data.actions.map((action) => (
-              <div key={action!.label} data-tina-field={tinaField(action)} className='bg-foreground/10 rounded-[calc(var(--radius-xl)+0.125rem)] border p-0.5'>
-                <Button asChild size='lg' variant={action!.type === 'link' ? 'ghost' : 'default'} className='rounded-xl px-5 text-base'>
-                  <Link href={action!.link!}>
-                    {action?.icon && <Icon data={action?.icon} />}
-                    <span className='text-nowrap'>{action!.label}</span>
-                  </Link>
-                </Button>
-              </div>
-            ))}
-        </AnimatedGroup>
+      <div className="mx-auto w-full max-w-6xl px-5 pb-16 pt-32 sm:px-6 md:pb-24">
+        <div className="max-w-3xl animate-in fade-in-0 slide-in-from-bottom-4 duration-1000">
+          {data.eyebrow && (
+            <p className="eyebrow text-gold" data-tina-field={tinaField(data, "eyebrow")}>
+              {data.eyebrow}
+            </p>
+          )}
+          {data.headline && (
+            <h1
+              className="mt-6 text-5xl font-medium leading-[1.04] sm:text-6xl md:text-7xl"
+              data-tina-field={tinaField(data, "headline")}
+            >
+              {data.headline}
+            </h1>
+          )}
+          {data.subheadline && (
+            <p
+              className="mt-6 max-w-xl text-lg text-cream/85 md:text-xl"
+              data-tina-field={tinaField(data, "subheadline")}
+            >
+              {data.subheadline}
+            </p>
+          )}
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            {data.primaryCta?.label && (
+              <span data-tina-field={tinaField(data.primaryCta)}>
+                <CtaLink
+                  href={data.primaryCta.href}
+                  label={data.primaryCta.label}
+                  variant={data.primaryCta.variant || "primary"}
+                  lang={lang}
+                />
+              </span>
+            )}
+            {data.secondaryCta?.label && (
+              <span data-tina-field={tinaField(data.secondaryCta)}>
+                <CtaLink
+                  href={data.secondaryCta.href}
+                  label={data.secondaryCta.label}
+                  variant={data.secondaryCta.variant || "outline"}
+                  lang={lang}
+                />
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-
-      {data.image && (
-        <AnimatedGroup variants={transitionVariants}>
-          <div className='relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20 max-w-full' data-tina-field={tinaField(data, 'image')}>
-            <div aria-hidden className='bg-linear-to-b absolute inset-0 z-10 from-transparent from-35% pointer-events-none' style={gradientStyle} />
-            <div className='inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1'>
-              <ImageBlock image={data.image} />
-            </div>
-          </div>
-        </AnimatedGroup>
-      )}
-    </Section>
+    </section>
   );
 };
 
-const ImageBlock = ({ image }: { image: PageBlocksHeroImage }) => {
-  if (image.videoUrl) {
-    let videoId = '';
-    if (image.videoUrl) {
-      const embedPrefix = '/embed/';
-      const idx = image.videoUrl.indexOf(embedPrefix);
-      if (idx !== -1) {
-        videoId = image.videoUrl.substring(idx + embedPrefix.length).split('?')[0];
-      }
-    }
-    const thumbnailSrc = image.src ? image.src! : videoId ? `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg` : '';
-
-    return <HeroVideoDialog videoSrc={image.videoUrl} thumbnailSrc={thumbnailSrc} thumbnailAlt='Hero Video' />;
-  }
-
-  if (image.src) {
-    return (
-      <Image
-        className='z-2 border-border/25 aspect-15/8 relative rounded-2xl border max-w-full h-auto'
-        alt={image!.alt || ''}
-        src={image!.src!}
-        height={4000}
-        width={3000}
-      />
-    );
-  }
-};
-
 export const heroBlockSchema: Template = {
-  name: 'hero',
-  label: 'Hero',
+  name: "hero",
+  label: "Hero (bannière d'accueil)",
   ui: {
-    previewSrc: '/blocks/hero.png',
+    previewSrc: "/blocks/hero.png",
     defaultItem: {
-      tagline: "Here's some text above the other text",
-      headline: 'This Big Text is Totally Awesome',
-      text: 'Phasellus scelerisque, libero eu finibus rutrum, risus risus accumsan libero, nec molestie urna dui a leo.',
+      eyebrow: "Côte d'Azur · Pays Basque",
+      headline: "Des voitures de légende pour vos plus beaux moments",
+      subheadline:
+        "Location de voitures de collection pour mariages, événements et shootings, avec un accompagnement sur-mesure.",
+      primaryCta: { label: "Demander un devis", href: "/#contact", variant: "primary" },
+      secondaryCta: { label: "Voir la flotte", href: "/#prestations", variant: "outline" },
     },
   },
   fields: [
-    sectionBlockSchemaField as any,
     {
-      type: 'string',
-      label: 'Headline',
-      name: 'headline',
+      type: "string",
+      name: "eyebrow",
+      label: "Sur-titre",
+      description: "Court texte au-dessus du titre (ex. la zone géographique).",
     },
     {
-      type: 'string',
-      label: 'Tagline',
-      name: 'tagline',
+      type: "string",
+      name: "headline",
+      label: "Titre principal",
+      required: true,
+      description: "Le grand titre d'accroche.",
     },
     {
-      label: 'Actions',
-      name: 'actions',
-      type: 'object',
-      list: true,
-      ui: {
-        defaultItem: {
-          label: 'Action Label',
-          type: 'button',
-          icon: {
-              name: "Tina",
-              color: "white",
-              style: "float",
-          },
-          link: '/',
-        },
-        itemProps: (item) => ({ label: item.label }),
-      },
-      fields: [
-        {
-          label: 'Label',
-          name: 'label',
-          type: 'string',
-        },
-        {
-          label: 'Type',
-          name: 'type',
-          type: 'string',
-          options: [
-            { label: 'Button', value: 'button' },
-            { label: 'Link', value: 'link' },
-          ],
-        },
-        iconSchema as any,
-        {
-          label: 'Link',
-          name: 'link',
-          type: 'string',
-        },
-      ],
+      type: "string",
+      name: "subheadline",
+      label: "Sous-titre",
+      ui: { component: "textarea" },
+    },
+    imageField("image", "Image de fond"),
+    {
+      type: "string",
+      name: "videoSrc",
+      label: "Vidéo de fond 1 (optionnelle)",
+      description:
+        "Chemin d'un fichier .mp4 dans public/uploads (ex. /uploads/hero-speed-cote-dazur.mp4). Laissez vide pour n'afficher que l'image. Vidéo muette ; l'image sert d'aperçu (poster).",
     },
     {
-      type: 'object',
-      label: 'Image',
-      name: 'image',
-      fields: [
-        {
-          name: 'src',
-          label: 'Image Source',
-          type: 'image',
-        },
-        {
-          name: 'alt',
-          label: 'Alt Text',
-          type: 'string',
-        },
-        {
-          name: 'videoUrl',
-          label: 'Video URL',
-          type: 'string',
-          description: 'If using a YouTube video, make sure to use the embed version of the video URL',
-        },
-      ],
+      type: "string",
+      name: "videoSrc2",
+      label: "Vidéo de fond 2 (optionnelle)",
+      description:
+        "Si renseignée, la 2e vidéo s'enchaîne après la 1re avec un fondu (la dernière seconde de la 1re est coupée), puis la séquence reboucle.",
     },
+    linkField("primaryCta", "Bouton principal"),
+    linkField("secondaryCta", "Bouton secondaire"),
   ],
 };
